@@ -1,0 +1,503 @@
+
+#INTRODUCTION 
+This script computes an Agent-Based Model in which a group of agents has to solve a task, either as individual learners or as social learners. The social learners can use different learning strategies to learn from the other agents. The individual learners will explore the task environment on their own.  
+
+The model needs 4 fixed parameter: 
+- N = number of agents 
+- rounds = number of rounds 
+- proportion_ind = proportion of individual learners in the group
+- SL_strategy = the social learning strategy to be applied 
+
+When you run the model it outputs a dataframe containing the score for each agent on every round, mean score of both individual and social learners, and a mean score of all agents. 
+From this dataframe you can plot how the agents performed given the fixed parameters. 
+
+The model uses 4 predefined functions: 
+- simulation() 
+- getScore()
+- runIndividual()
+- runSocial()
+Each of these functions are defined below in the script along with explanations of what they do. 
+
+#YOUR TASK 
+Task 1) 
+- Compute two different learning strategies: 1) Best member, and 2) Conformity. 
+- You have to write the code in the runSocial() function 
+- The code should have the format: if(strategy=="Best Member"){ do this }
+- Within the {} you should have the following: 
+  - define how the agents should generate their new guess 
+  - compute their new score using the getScore() function
+  - add their new score to the df (index for that round and that agent id)
+  - add their new guess to the "guesses" list for that agent and that round
+  
+Task 2) 
+- Run the model with each of the strategies, and inspect which performs better. Remember to initialize a new target_string on every simulation run. Also remember to save the data in different names for each simulation. The names should be informative about which fixed parameters you used. 
+  - TIP: merge the DFs for each simulation, and plot them with color=SL_strategy
+- Run the model with different proportions of individual learners (for both of the strategies), and plot the results.
+- Inspect which proportion of individual learners gives the optimal mean performance of the group, for each of the two strategies. 
+  - TIP: merge the DFs for each run, and plot them with color=proportion_ind
+  
+
+```{r}
+
+install.packages("BiocManager")
+#p_load(Momocs)
+pacman::p_load(pacman, tidyverse,BiocManager)
+
+
+```
+
+
+#RUN SIMULATION 
+
+- First, we setup the task. The task is defined as a string of 15 digtis between 0 and 9. The agents have to figure out the correct combination of digits. On every round, they produce one guess. 
+
+- Second, we run a simulation using the simulation() function. The simulation function takes 4 inputs: N = number of agents, rounds = number of rounds, proportion_ind = proportion of agents that do individual learning (they do not learn from their friends). The function outputs a dataframe, containing the performance of each agent on each round, as well as the mean performance of all agents on each round. 
+
+```{r}
+#Setup task 
+target_string = c(sample(0:9,15, replace=TRUE))
+
+#kør simulationen
+data <- simulation(
+  N = 50,
+  rounds = 100,
+  proportion_ind = 1,
+  SL_strategy = "Best Member"
+)
+
+#Save the df as .csv file 
+write.csv(data,'ABM_Data.csv')
+
+
+
+```
+
+
+#SIMULATION FUNCTION - simulation()
+
+How the function works: 
+- The simulation function takes the four inputs described above. 
+
+- Generate a strategy_list which contains a list of the names "individual" and "social" determined by the value we set for proportion_ind and the number of agents N. - To be used to generate the df.  
+
+- Generate a dataframe containing 8 columns: 1) id, 2) round, 3) ind_strategy (who is individual and who is social), 4) score of the agent, SL_strategy (which social strategy did we use), and proportion_ind. Most of the df is empty in the beginning, and will be gradually be filled out as the simulation runs. 
+
+- Generate a matrix storing the guesses (combination of digits) of each agent in each round. The matrix has 3 dimensions (agent, digits, round). That is, for each round we have a 2D matrix containing N rows (one for each agent) and 15 columns (one for each digit). To index the guess of agent 3 on round 5: guesses[3, ,5].  
+    
+- Run loop to set op the values of the first round. For each agent, the loop does three things: 1) give the agent a first guess, by randomly sampling 15 digits between 0 and 9, 2) get the score of that guess (using the getScore() function) and add the score to the df, and 3) add the guess of the each agent to the guesses list of the first round. 
+
+- Calculate the mean score of all individual players on round 1 and add to df. 
+- Calculate the mean score of all scoial learners on round 1 and add to df. 
+- Calculate the mean score of all agents on round 1 and add to the df. 
+
+- Run learning. For each round, the loop does 3 things:  1) run individual learning and update the df and guesses matrix (using the runIndividual() function), 2) run social learning and update the df and guesses matrix (using the runSocial() function), and 3) calculate the three mean scores (as above) for that round. 
+
+- Return the dataframe (df) after running all rounds. 
+
+
+```{r}
+simulation <- function(N, rounds, proportion_ind, SL_strategy) {
+  #Create df
+  strategy_list = c(rep("individual", N * proportion_ind), rep("social", N -
+                                                                 (N * proportion_ind)))
+  df <-
+    data.frame(
+      id = rep(1:N, rounds),
+      round = rep(1:rounds, each = N),
+      ind_strategy =   strategy_list,
+      score = NA,
+      SL_strategy = SL_strategy,
+      prop_ind = proportion_ind
+    )
+  
+  # 3-Dimensional array to keep track of the agent's guesses - has dimensions [agent, digits, round]
+  guesses = array(0, c(N, 15, rounds))
+  
+  #Setup values for first round
+  for (agent in 1:N) {
+    firstGuess <- c(sample(0:9, 15, replace = TRUE))
+    guesses[agent, , 1] <- firstGuess
+    df$score[df$round == 1 & df$id == agent] <- getScore(firstGuess)
+  }
+  
+  df$mean[df$round == 1 &
+            df$ind_strategy == "individual"] <-
+    mean(df$score[df$round == 1 & df$ind_strategy == "individual"])
+  df$mean[df$round == 1 &
+            df$ind_strategy == "social"] <-
+    mean(df$score[df$round == 1 & df$ind_strategy == "social"])
+  df$meanAll[df$round == 1] <- mean(df$score[df$round == 1])
+  
+  #Run learning
+  for (round in 2:rounds) {
+    ind <- runIndividual(df, guesses, round, N)
+    df <- ind$df
+    guesses <- ind$guesses
+    
+    soc <- runSocial(df, guesses, round, N, SL_strategy)
+    df <- soc$df
+    guesses <- soc$guesses
+    
+    df$mean[df$round == round &
+              df$ind_strategy == "individual"] <-
+      mean(df$score[df$round == round & df$ind_strategy == "individual"])
+    df$mean[df$round == round &
+              df$ind_strategy == "social"] <-
+      mean(df$score[df$round == round & df$ind_strategy == "social"])
+    df$meanAll[df$round == round] <- mean(df$score[df$round == round])
+  }
+  return(df)
+}
+
+```
+
+
+
+#INDIVIDUAl LEARNING FUNCTION - runIndividual()
+
+How the function works: 
+- Take the df, guesses, round and number of agents as input 
+- Loop through each of the agents 
+- If the strategy of the agent is "individual" then do the following. 
+- Create a new df containing only the values from the previous round 
+- Extract the previous guess of the agent (from guesses)
+- Check if their previous score was maximum (15) - if it was, keep the same guess. If not do the following:
+- Take one digit in the guess at a time, and check whether it is similar to that digit in the target string. If it is not the same, then change that digit (increase it by 1, if it is 9 make it 0)
+- If it has changed one digit, then stop the loop (we only want to change 1 digit in each round)
+- If all digits are correct, then stop the loop as well. 
+- Compute the score of the new guess 
+- Add the new score to the df 
+- Add the new guess to the guesses list 
+- Return the updated df and guesses 
+
+
+```{r}
+#Function to run individual learners 
+runIndividual <- function(df, guesses, round, N) {
+  for (agent in 1:N) {
+    if (df$ind_strategy[agent] == "individual") {
+      prevRound <- df[df$round == round - 1, ]
+      prevScore <- prevRound$score[agent]
+      prevGuess <- guesses[agent, , round - 1]
+      
+      if (prevScore == 15) {
+        newGuess <- prevGuess
+      }
+      
+      else{
+        stop <- 0
+        k <- 1
+        while (stop == 0) {
+          if (prevGuess[k] != target_string[k]) {
+            ifelse(prevGuess[k] == 9,
+                   prevGuess[k] <- 0,
+                   prevGuess[k] <- prevGuess[k] + 1)
+            stop <- 1
+          }
+          else{
+            k = k + 1
+            if (k == 15) {
+              stop <- 1
+            }
+          }
+        }
+        
+        newGuess <- prevGuess
+      }
+      score <- getScore(newGuess)
+      guesses[agent, , round] <- newGuess
+      df$score[df$round == round & df$id == agent] <- score
+    }
+  }
+  output <- list(df = df, guesses = guesses)
+  return(output)
+}
+
+```
+
+
+
+#SOCIAL LEARNING FUNCTION - runSocial() 
+
+How the function works: 
+- It takes the df, guesses, round, and strategy as input 
+- Loop through all the agents
+- If the agent is a social learner do the following: 
+- Create a new df containing only the values from the previous round. 
+- Extract the previous score of that agent
+- Extract the previous guess from that agent 
+- If the social learning strategy is "Best Member", do the following (for you to specify)
+    - This code should generate a new guess (newGuess <- x). 
+- If the social learning strategy is "Conformity", do the following (for you to specify)
+    - This code should generate a new guess (newGuess <- x). 
+- Compute the score of the new guess 
+- Add the new score to the df 
+- Add the new guess to the guesses matrix 
+- Return the updated df and guesses matrix 
+
+
+```{r}
+#Function to run social learners
+runSocial <- function(df, guesses, round, N, strategy) {
+  prevRound <- df[df$round == round - 1, ]
+  
+  for (agent in 1:N) {
+    if (df$ind_strategy[agent] == "social") {
+      #the score of precious round
+      prevScore <- prevRound$score[agent]
+      #previous guess
+      prevGuess <- guesses[agent, , round - 1]
+      #if last guess was perfect, stick with that
+      if (prevScore == 15) {
+        newGuess <- prevGuess
+      }
+      
+      else{
+        #Implement the specific social learning strategies
+         if (strategy == "Best Member") {
+          #Your code here
+          #The code should find the guess of the best member (highest score) in previous round
+           prevGuesses <- c()
+           
+           #get highest score number
+           maxPrevScore <- max(prevRound$score)
+           
+           #sample an agent with best score
+           bestAgent <- prevRound %>%
+             subset(score == maxPrevScore) %>% 
+             sample(id,1)
+           
+          # 1) Get the previous score of that agent of the best agent
+          bestAgentScore <- df$score[id == bestAgent & round == round - 1]
+          # 2) Check if that score is better than the agent's own.
+           if (prevScore < bestAgentScore) {
+             newGuess <- guesses[bestAgent, , round - 1]# 3) If it is, then extract the guess of that agent from the "guesses" matrix.
+          }
+          
+          
+          
+          # 4) If not, the individual learning will run.
+          
+           
+             
+           
+           
+          #Check if the score of that agent was better than your own
+          #If yes, then use the guess of that agent
+          #If not, then do individual learning (already coded below)
+
+          else{
+            stop <- 0
+            k <- 1
+            while (stop == 0) {
+              if (prevGuess[k] != target_string[k]) {
+                ifelse(prevGuess[k] == 9,
+                       prevGuess[k] <- 0,
+                       prevGuess[k] <- prevGuess[k] + 1)
+                stop <- 1
+              }
+              else{
+                k = k + 1
+                if (k == 15) {
+                  stop <- 1
+                }
+              }
+            }
+
+            newGuess <- prevGuess
+          }
+        }
+
+        
+        
+        #To figure out how many times each guess was used, you can use the table(list) function. The "list" element should be a
+        #list containing all the guesses you want to look at. The table function then gives you a table of each unique guess and
+        #a number of the frequency of this guess. You extract the guess from this table with names(table(list)).
+        
+        if (strategy == "Conformity") {
+          #Make an empty list where we can put all the guesses from previous round (to put in the table() function)
+          prevGuesses <- c()
+          
+          #We fill this list extracting all the guesses from previous round and collapsing each guess to one string.
+          #This just gives you a list "prevGuesses" containing all the guesses of previous round as string format.
+          #We need them in the string format to use the max() function to check which has highest frequency.
+          for (i in 1:N) {
+            prevGuesses[i] <- paste(guesses[i, , round - 1], collapse = "")
+          }
+          
+          #There might be several guesses with the same frequency. Therefore, we first extract all the guesses that has the highest
+          #frequency from the prevGuesses list.
+          #The table(prevGuesses) function gives you a table with each unique guess and a value speciying the frequency of this guess.
+          #We check which element in this table has the frequency value that is equal to the max frequency value in the table, and put
+          #this in the allMaxFreq list (contains all the guesses with highest frequency).
+          allMaxFreq <- which(table(prevGuesses) == max(table(prevGuesses)))
+          
+          #The we want to sample one of those randomly using the sample() function.
+          #We use the as.vector() function to get the index of this guess (this index shows where it is in the table(prevGuesses) - not
+          #which agent it is).
+          mostFreq <- as.vector(sample(allMaxFreq, 1))
+          
+          #Then we need to figure out which guess in the prevGuesses list matches the index of the most frequent guess in the
+          #table(prevGuesses), in order to figure out which agent had this guess.
+          #We check which element in the prevGuesses list matches the mostFreq index in the table(prevGuesses).
+          #We use the names() function to match with the guess and not the frequency value (because the table contains both).
+          #We index with 1 in the end, because there might be several guesses that matches (if several had same guess), and we just
+          #want one so that we can take the guess and get the score.
+          #The "index" object then contains one value, which is the index of the agent that has the most frequent guess.
+          index <-
+            which(prevGuesses == names(table(prevGuesses)[mostFreq]))[1]
+          
+
+          # 1) Get the previous score of that agent (who has the index "index")
+          freqGuessAgentScore <- df$score[id == index & round == round - 1]
+          # 2) Check if that score is better than the agent's own.
+           if (prevScore < freqGuessAgentScore) {
+             newGuess <- guesses[index, , round - 1]# 3) If it is, then extract the guess of that agent from the "guesses" matrix.
+          }
+          
+          
+          
+          # 4) If not, the individual learning will run.
+          
+          else{
+            stop <- 0
+            k <- 1
+            while (stop == 0) {
+              if (prevGuess[k] != target_string[k]) {
+                ifelse(prevGuess[k] == 9,
+                       prevGuess[k] <- 0,
+                       prevGuess[k] <- prevGuess[k] + 1)
+                stop <- 1
+              }
+              else{
+                k = k + 1
+                if (k == 15) {
+                  stop <- 1
+                }
+              }
+            }
+            
+            newGuess <- prevGuess
+          }
+        }
+      }
+      score <- getScore(newGuess)
+      guesses[agent, , round] <- newGuess
+      df$score[df$round == round & df$id == agent] <- score
+    }
+  }
+  output <- list(df = df, guesses = guesses)
+  return(output)
+}
+
+```
+
+#GET SCORE FUNCTION - getScore()
+
+How the function works:-It takes a guess (list of 15 digits) as input
+- Set the score to 0
+- Loop through each of the 15 digits:-If the digit is equal to the same digit in the target string, then add 1 to the score.
+- If not, do nothing, and continue with the next digit.
+- Return the score.
+
+```{r}
+#Function to calculate score
+getScore <- function(guess) {
+  score = 0
+  for (i in 1:15) {
+    if (guess[i] == target_string[i]) {
+      score = score + 1
+      i = i + 1
+    }
+  }
+  return(score)
+}
+
+```
+
+
+#PLOT RESULTS 
+
+
+```{r}
+p_load(ggplot2, gganimate)
+
+#Combine Best Member data
+bmData <-
+  rbind(bm0, bm10, bm20, bm30, bm40, bm50, bm60, bm70, bm80, bm90, bm100)
+bmData$prop_ind <- as.factor(bmData$prop_ind)
+write.csv(bmData, 'bmData.csv')
+
+#Combine Conformity data
+cfData <-
+  rbind(cf0, cf10, cf20, cf30, cf40, cf50, cf60, cf70, cf80, cf90, cf100)
+cfData$prop_ind <- as.factor(cfData$prop_ind)
+write.csv(cfData, 'cfData.csv')
+
+#Combine all data
+allData <- rbind(cfData, bmData)
+write.csv(allData, 'allData.csv')
+
+
+##################################################################################################
+#PLOTS
+
+#Examples:
+#Plot mean score of all agents in the simulation colored by SL strategy with prop_ind=0.2.
+ggplot(allData[allData$prop_ind == 0.2, ], aes(round, meanAll)) +
+  geom_smooth(aes(color = SL_strategy)) +
+  labs(title = "Mean score of the group per round")
+
+#Plot mean score  distinguishing between type of learner with prop_ind=0.2. for BM strategy
+ggplot(bmData[bmData$prop_ind == 0.2, ], aes(round, mean)) +
+  geom_smooth(aes(color = ind_strategy)) +
+  labs(title = "Mean score of the group per round")
+
+#Plot mean score of the entire group colored by proportion of individual learners
+ggplot(bmData, aes(round, meanAll)) +
+  geom_line(aes(color = prop_ind)) +
+  labs(title = "Mean score of the group per round")
+
+#Plot mean score of social learners colored by proportion of individual learners
+ggplot(bmData[bmData$ind_strategy == "social", ], aes(round, mean)) +
+  geom_line(aes(color = prop_ind)) +
+  labs(title = "Mean score of the group per round")
+
+
+
+##################################################################################################
+#PLOT with gganimate - GIF
+plotLearningStrategyProp20 <-
+  ggplot(allData[allData$prop_ind == 0.2, ], aes(round, meanAll)) +
+  geom_line(aes(color = SL_strategy)) +
+  labs(title = "Mean score of the group per round") +
+  transition_reveal(round) #gganimate, reveal results gradually as a function of round
+
+#Create gif of the animation
+anim_plotLearningStrategyProp20 <-
+  animate(
+    plotLearningStrategyProp20,
+    100,
+    fps = 20,
+    duration = 30,
+    width = 950,
+    height = 750,
+    renderer = gifski_renderer(loop = FALSE)
+  )
+
+#Save the gif
+anim_save("anim_plotLearningStrategyProp20.gif", animation = anim_plotLearningStrategyProp20)
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+
+
+
