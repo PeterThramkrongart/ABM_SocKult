@@ -9,7 +9,7 @@ Peter Thramkrongart and Asger Lakkenborg
 setwd("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult")
 pacman::p_load(rJava, RNetLogo, tidyverse, parallel)
 
-ABM_Data <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_Data2.csv")
+ABM_Data <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_Data10.csv")
 ```
 
     ## Warning: Missing column names filled in: 'X1' [1]
@@ -27,7 +27,7 @@ ABM_Data <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_Soc
     ## See spec(...) for full column specifications.
 
 ``` r
-distributionData <- read_csv("DistributionData2.csv")
+distributionData <- read_csv("DistributionData10.csv")
 ```
 
     ## Warning: Missing column names filled in: 'X1' [1]
@@ -156,7 +156,7 @@ ABM_Data %>%
 ![](echoPlots_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
-distributionData %>% filter(step_id == 40, numlearners == 1000, censorship_mod == "None") %>%
+distributionData %>% filter(step_id == 50, numlearners == 1000, censorship_mod == "None") %>%
   ggplot(aes(`prior-val`,
              color = prune_sd_mod)) + geom_density() + facet_wrap(search_distance ~
                                                                                broadcast_freq, labeller = label_both) + ggtitle("Distribution of beliefs")
@@ -175,7 +175,7 @@ distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes
 ![](echoPlots_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
-distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id == 40) %>%  ggplot(aes(
+distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id == 50) %>%  ggplot(aes(
   `prior-val`,
   color = censorship_mod,
   linetype = censorship_mod

@@ -15,9 +15,9 @@ knitr::opts_chunk$set(echo = TRUE)
 setwd("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult")
 pacman::p_load(rJava, RNetLogo, tidyverse, parallel)
 
-ABM_Data <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_Data2.csv")
+ABM_Data <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_Data10.csv")
 
-distributionData <- read_csv("DistributionData2.csv")
+distributionData <- read_csv("DistributionData10.csv")
 
 ABM_Data <-
   ABM_Data %>% mutate_at(
@@ -113,7 +113,7 @@ ABM_Data %>%
 ```
 
 ```{r,fig.width = 15,fig.height= 12}
-distributionData %>% filter(step_id == 40, numlearners == 1000, censorship_mod == "None") %>%
+distributionData %>% filter(step_id == 50, numlearners == 1000, censorship_mod == "None") %>%
   ggplot(aes(`prior-val`,
              color = prune_sd_mod)) + geom_density() + facet_wrap(search_distance ~
                                                                                broadcast_freq, labeller = label_both) + ggtitle("Distribution of beliefs")
@@ -135,7 +135,7 @@ distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes
 
 ```{r,fig.width = 15,fig.height= 12}
 
-distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id == 40) %>%  ggplot(aes(
+distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id == 50) %>%  ggplot(aes(
   `prior-val`,
   color = censorship_mod,
   linetype = censorship_mod
