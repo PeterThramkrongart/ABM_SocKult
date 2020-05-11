@@ -1,0 +1,158 @@
+---
+title: "Plotting Echo-Chamber ABM"
+author: "Peter Thramkrongart and Asger Lakkenborg"
+date: "11/5/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Here we are loading the data
+```{r Loading data}
+
+setwd("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult")
+pacman::p_load(rJava, RNetLogo, tidyverse, parallel)
+
+ABM_Data <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_Data2.csv")
+
+distributionData <- read_csv("DistributionData2.csv")
+
+ABM_Data <-
+  ABM_Data %>% mutate_at(
+    c(
+      "censorship_mod",
+      "numlearners",
+      "broadcast_freq",
+      "prune_sd_mod",
+      "search_distance",
+      "run_id",
+      "param_set_id"
+    ),
+    as.factor
+  )
+
+distributionData <-
+  distributionData %>% mutate_at(
+    c(
+      "censorship_mod",
+      "numlearners",
+      "broadcast_freq",
+      "prune_sd_mod",
+      "search_distance",
+      "run_id",
+      "param_set_id"
+    ),
+    as.factor
+  ) %>% mutate_at(
+    c(
+      "censorship_mod",
+      "numlearners",
+      "broadcast_freq",
+      "prune_sd_mod",
+      "search_distance",
+      "run_id",
+      "param_set_id"
+    ),
+    as.factor
+  )
+
+ABM_DataBasic <- ABM_Data %>% 
+  filter(numlearners == 1000,broadcast_freq == "None", censorship_mod == "None")
+
+distributionDataBasic <- distributionData %>% 
+  filter(numlearners == 1000,broadcast_freq == "None", censorship_mod == "None")
+
+
+```
+
+
+```{r}
+
+distributionData %>% filter(numlearners == 1000) %>%
+  ggplot(aes(
+    `prior-val`,
+    search_distance,
+    fill = as.factor(prune_sd_mod),
+    alpha = as.factor(broadcast_freq)
+  ))  + facet_wrap(censorship_mod ~ broadcast_freq, labeller = label_both) + geom_boxplot(outlier.size = 0.1) + ggtitle("Distribution of beliefs")
+```
+
+
+```{r}
+ABM_Data %>% filter(numlearners == 1000, search_distance != 10) %>%
+  ggplot(aes(step_id,
+             glob_p_h,
+             color = as.factor(prune_sd_mod))) + facet_wrap(search_distance ~ censorship_mod ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1) + ggtitle("Growth of confidence over time")
+
+```
+
+```{r}
+ABM_Data %>%
+  ggplot(aes(
+    step_id,
+    glob_p_h,
+    linetype = as.factor(censorship_mod),
+    color = as.factor(prune_sd_mod)
+  )) + facet_wrap(search_distance ~ numlearners ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1) + ggtitle("Growth of confidence over time")
+
+```
+
+```{r}
+ABM_Data %>%
+  filter(numlearners == 1000) %>%
+  ggplot(aes(
+    step_id,
+    glob_purity,
+    linetype = censorship_mod,
+    color = prune_sd_mod,
+  )) +
+  facet_wrap(search_distance  ~ broadcast_freq, labeller = label_both) +
+  geom_smooth(size = 0.1,alpha = 0.1) + ggtitle("Growth of belief purity over time")
+
+```
+
+```{r}
+distributionData %>% filter(step_id == 40, numlearners == 1000, censorship_mod == "None") %>%
+  ggplot(aes(`prior-val`,
+             color = as.factor(prune_sd_mod))) + geom_density() + facet_wrap(search_distance ~
+                                                                               broadcast_freq, labeller = label_both) + ggtitle("Distribution of beliefs")
+
+
+
+```
+
+```{r}
+
+distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes(
+  `prior-val`,
+  color = as.factor(prune_sd_mod),
+  linetype = as.factor(censorship_mod)
+)) + facet_wrap(broadcast_freq ~ numlearners ~ run_id, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
+
+
+```
+
+```{r}
+
+distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id == 40) %>%  ggplot(aes(
+  `prior-val`,
+  color = as.factor(censorship_mod),
+  linetype = as.factor(censorship_mod)
+)) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
+
+
+```
+
+```{r}
+
+ABM_Data %>% filter(numlearners == 1000, search_distance == 10) %>%  ggplot(aes(
+  step_id,
+  glob_sd,
+  color = as.factor(censorship_mod),
+  linetype = as.factor(censorship_mod)
+)) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_smooth() + ggtitle("Decrease in SD of beleif over time")
+
+
+```
