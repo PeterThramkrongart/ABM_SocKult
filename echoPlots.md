@@ -114,7 +114,7 @@ distributionData %>% filter(numlearners == 1000) %>%
 
     ## Warning: Using alpha for a discrete variable is not advised.
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-1-1.pdf)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ``` r
 ABM_Data %>% filter(numlearners == 1000, search_distance != 10) %>%
@@ -125,7 +125,7 @@ ABM_Data %>% filter(numlearners == 1000, search_distance != 10) %>%
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-2-1.pdf)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 ABM_Data %>%
@@ -139,7 +139,7 @@ ABM_Data %>%
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-3-1.pdf)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
 ABM_Data %>%
@@ -156,7 +156,7 @@ ABM_Data %>%
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-4-1.pdf)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 distributionData %>% filter(step_id == 40, numlearners == 1000, censorship_mod == "None") %>%
@@ -165,7 +165,7 @@ distributionData %>% filter(step_id == 40, numlearners == 1000, censorship_mod =
                                                                                broadcast_freq, labeller = label_both) + ggtitle("Distribution of beliefs")
 ```
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-5-1.pdf)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes(
@@ -175,7 +175,7 @@ distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes
 )) + facet_wrap(broadcast_freq ~ numlearners ~ run_id, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
 ```
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-6-1.pdf)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id == 40) %>%  ggplot(aes(
@@ -185,7 +185,7 @@ distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id 
 )) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
 ```
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-7-1.pdf)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 ABM_Data %>% filter(numlearners == 1000, search_distance == 10) %>%  ggplot(aes(
@@ -198,4 +198,4 @@ ABM_Data %>% filter(numlearners == 1000, search_distance == 10) %>%  ggplot(aes(
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-8-1.pdf)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
