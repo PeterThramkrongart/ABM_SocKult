@@ -107,12 +107,9 @@ distributionData %>% filter(numlearners == 1000) %>%
   ggplot(aes(
     `prior-val`,
     search_distance,
-    fill = as.factor(prune_sd_mod),
-    alpha = as.factor(broadcast_freq)
+    fill = prune_sd_mod
   ))  + facet_wrap(censorship_mod ~ broadcast_freq, labeller = label_both) + geom_boxplot(outlier.size = 0.1) + ggtitle("Distribution of beliefs")
 ```
-
-    ## Warning: Using alpha for a discrete variable is not advised.
 
 ![](echoPlots_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
@@ -120,7 +117,7 @@ distributionData %>% filter(numlearners == 1000) %>%
 ABM_Data %>% filter(numlearners == 1000, search_distance != 10) %>%
   ggplot(aes(step_id,
              glob_p_h,
-             color = as.factor(prune_sd_mod))) + facet_wrap(search_distance ~ censorship_mod ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1) + ggtitle("Growth of confidence over time")
+             color = prune_sd_mod)) + facet_wrap(search_distance ~ censorship_mod ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
 ```
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
@@ -132,9 +129,9 @@ ABM_Data %>%
   ggplot(aes(
     step_id,
     glob_p_h,
-    linetype = as.factor(censorship_mod),
-    color = as.factor(prune_sd_mod)
-  )) + facet_wrap(search_distance ~ numlearners ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1) + ggtitle("Growth of confidence over time")
+    linetype = censorship_mod,
+    color = prune_sd_mod
+  )) + facet_wrap(search_distance ~ numlearners ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
 ```
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
@@ -161,7 +158,7 @@ ABM_Data %>%
 ``` r
 distributionData %>% filter(step_id == 40, numlearners == 1000, censorship_mod == "None") %>%
   ggplot(aes(`prior-val`,
-             color = as.factor(prune_sd_mod))) + geom_density() + facet_wrap(search_distance ~
+             color = prune_sd_mod)) + geom_density() + facet_wrap(search_distance ~
                                                                                broadcast_freq, labeller = label_both) + ggtitle("Distribution of beliefs")
 ```
 
@@ -170,8 +167,8 @@ distributionData %>% filter(step_id == 40, numlearners == 1000, censorship_mod =
 ``` r
 distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes(
   `prior-val`,
-  color = as.factor(prune_sd_mod),
-  linetype = as.factor(censorship_mod)
+  color = prune_sd_mod,
+  linetype = censorship_mod
 )) + facet_wrap(broadcast_freq ~ numlearners ~ run_id, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
 ```
 
@@ -180,8 +177,8 @@ distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes
 ``` r
 distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id == 40) %>%  ggplot(aes(
   `prior-val`,
-  color = as.factor(censorship_mod),
-  linetype = as.factor(censorship_mod)
+  color = censorship_mod,
+  linetype = censorship_mod
 )) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
 ```
 
@@ -191,9 +188,9 @@ distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id 
 ABM_Data %>% filter(numlearners == 1000, search_distance == 10) %>%  ggplot(aes(
   step_id,
   glob_sd,
-  color = as.factor(censorship_mod),
-  linetype = as.factor(censorship_mod)
-)) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_smooth() + ggtitle("Decrease in SD of beleif over time")
+  color = censorship_mod,
+  linetype = censorship_mod
+)) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_smooth(alpha = 0.1) + ggtitle("Decrease in SD of beleif over time")
 ```
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
