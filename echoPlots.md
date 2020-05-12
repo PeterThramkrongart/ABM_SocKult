@@ -196,3 +196,141 @@ ABM_Data %>% filter(numlearners == 1000, search_distance == 10) %>%  ggplot(aes(
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
 ![](echoPlots_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+ABM_DataShort <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_DataShort5.csv")
+```
+
+    ## Warning: Missing column names filled in: 'X1' [1]
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   SF_setup_YN = col_logical(),
+    ##   broadcast_freq = col_character(),
+    ##   censorship_mod = col_character(),
+    ##   always_search_YN = col_logical()
+    ## )
+
+    ## See spec(...) for full column specifications.
+
+``` r
+distributionDataShort <- read_csv("distributionDataShort5.csv")
+```
+
+    ## Warning: Missing column names filled in: 'X1' [1]
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   X1 = col_double(),
+    ##   SF_setup_YN = col_logical(),
+    ##   numlearners = col_double(),
+    ##   search_distance = col_double(),
+    ##   broadcast_freq = col_character(),
+    ##   prune_sd_mod = col_double(),
+    ##   censorship_mod = col_character(),
+    ##   always_search_YN = col_logical(),
+    ##   SF_density_mod = col_double(),
+    ##   Prior_sd = col_double(),
+    ##   prior_sample_size = col_double(),
+    ##   agent_prior = col_double(),
+    ##   broadcast_val = col_double(),
+    ##   param_set_id = col_double(),
+    ##   who = col_double(),
+    ##   `my-p-h` = col_double(),
+    ##   `prior-val` = col_double(),
+    ##   run_id = col_double(),
+    ##   step_id = col_double()
+    ## )
+
+``` r
+ABM_DataShort <-
+  ABM_DataShort %>% mutate_at(
+    c(
+      "censorship_mod",
+      "numlearners",
+      "broadcast_freq",
+      "prune_sd_mod",
+      "search_distance",
+      "run_id",
+      "param_set_id"
+    ),
+    as.factor
+  )
+
+distributionDataShort <-
+  distributionDataShort %>% mutate_at(
+    c(
+      "censorship_mod",
+      "numlearners",
+      "broadcast_freq",
+      "prune_sd_mod",
+      "search_distance",
+      "run_id",
+      "param_set_id"
+    ),
+    as.factor
+  ) %>% mutate_at(
+    c(
+      "censorship_mod",
+      "numlearners",
+      "broadcast_freq",
+      "prune_sd_mod",
+      "search_distance",
+      "run_id",
+      "param_set_id"
+    ),
+    as.factor
+  )
+```
+
+``` r
+distributionDataShort %>% filter(search_distance == 10, step_id == 50) %>%  ggplot(aes(
+  `prior-val`,
+  color = censorship_mod,
+  linetype = censorship_mod
+)) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
+```
+
+![](echoPlots_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+ABM_DataShort %>%
+  ggplot(aes(
+    step_id,
+    glob_purity,
+    linetype = censorship_mod,
+    color = prune_sd_mod,
+  )) +
+  facet_wrap(search_distance  ~ broadcast_freq, labeller = label_both) +
+  geom_smooth(size = 0.1,alpha = 0.1) + ggtitle("Growth of belief purity over time")
+```
+
+    ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
+
+![](echoPlots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
+ABM_DataShort %>% filter(numlearners == 1000, search_distance != 10) %>%
+  ggplot(aes(step_id,
+             glob_p_h,
+             color = prune_sd_mod)) + facet_wrap(search_distance ~ censorship_mod ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
+```
+
+    ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
+
+![](echoPlots_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
+ABM_DataShort %>%
+  ggplot(aes(
+    step_id,
+    glob_p_h,
+    linetype = censorship_mod,
+    color = prune_sd_mod
+  )) + facet_wrap(search_distance ~ numlearners ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
+```
+
+    ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
+
+![](echoPlots_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
