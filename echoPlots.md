@@ -7,7 +7,7 @@ Peter Thramkrongart and Asger Lakkenborg
 
 ``` r
 setwd("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult")
-pacman::p_load(rJava, RNetLogo, tidyverse, parallel)
+pacman::p_load(rJava, RNetLogo, tidyverse, parallel,egg,wesanderson)
 
 ABM_Data <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_Data10.csv")
 ```
@@ -100,6 +100,8 @@ ABM_DataBasic <- ABM_Data %>%
 
 distributionDataBasic <- distributionData %>% 
   filter(numlearners == 1000,broadcast_freq == "None", censorship_mod == "None")
+
+theme_set(theme_bw(base_size = 20))
 ```
 
 ``` r
@@ -108,7 +110,7 @@ distributionData %>% filter(numlearners == 1000) %>%
     `prior-val`,
     search_distance,
     fill = prune_sd_mod
-  ))  + facet_wrap(censorship_mod ~ broadcast_freq, labeller = label_both) + geom_boxplot(outlier.size = 0.1) + ggtitle("Distribution of beliefs")
+  ))  + facet_wrap(censorship_mod ~ broadcast_freq, labeller = label_both) + geom_boxplot(outlier.size = 0.1) + ggtitle("Distribution of beliefs") 
 ```
 
 ![](echoPlots_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
@@ -154,6 +156,14 @@ ABM_Data %>%
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
 ![](echoPlots_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+?facet_wrap
+```
+
+    ## starting httpd help server ...
+
+    ##  done
 
 ``` r
 distributionData %>% filter(step_id == 50, numlearners == 1000, censorship_mod == "None") %>%

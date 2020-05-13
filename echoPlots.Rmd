@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r Loading data}
 
 setwd("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult")
-pacman::p_load(rJava, RNetLogo, tidyverse, parallel)
+pacman::p_load(rJava, RNetLogo, tidyverse, parallel,egg,wesanderson)
 
 ABM_Data <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_Data10.csv")
 
@@ -64,18 +64,24 @@ ABM_DataBasic <- ABM_Data %>%
 distributionDataBasic <- distributionData %>% 
   filter(numlearners == 1000,broadcast_freq == "None", censorship_mod == "None")
 
+theme_set(theme_bw(base_size = 20))
 
 ```
 
 
 ```{r,fig.width = 15,fig.height= 12}
 
+
+
+
 distributionData %>% filter(numlearners == 1000) %>%
   ggplot(aes(
     `prior-val`,
     search_distance,
     fill = prune_sd_mod
-  ))  + facet_wrap(censorship_mod ~ broadcast_freq, labeller = label_both) + geom_boxplot(outlier.size = 0.1) + ggtitle("Distribution of beliefs")
+  ))  + facet_wrap(censorship_mod ~ broadcast_freq, labeller = label_both) + geom_boxplot(outlier.size = 0.1) + ggtitle("Distribution of beliefs") 
+
+
 ```
 
 
@@ -109,6 +115,8 @@ ABM_Data %>%
   )) +
   facet_wrap(search_distance  ~ broadcast_freq, labeller = label_both) +
   geom_smooth(size = 0.1,alpha = 0.1) + ggtitle("Growth of belief purity over time")
+
+?facet_wrap
 
 ```
 
