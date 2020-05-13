@@ -64,7 +64,7 @@ ABM_DataBasic <- ABM_Data %>%
 distributionDataBasic <- distributionData %>% 
   filter(numlearners == 1000,broadcast_freq == "None", censorship_mod == "None")
 
-theme_set(theme_bw(base_size = 20))
+theme_set(theme_bw(base_size = 20) + theme(legend.position = "bottom"))
 
 ```
 
