@@ -85,11 +85,25 @@ distributionData %>% filter(numlearners == 1000) %>%
 ```
 
 
+
+
 ```{r,fig.width = 15,fig.height= 12}
 ABM_Data %>% filter(numlearners == 1000, search_distance != 10) %>%
   ggplot(aes(step_id,
              glob_p_h,
              color = prune_sd_mod)) + facet_wrap(search_distance ~ censorship_mod ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
+
+```
+
+```{r,fig.width = 15,fig.height= 12}
+ABM_Data %>%
+  filter(numlearners == 1000) %>% 
+  ggplot(aes(
+    step_id,
+    glob_p_h,
+    linetype = censorship_mod,
+    color = prune_sd_mod
+  )) + facet_wrap(search_distance  ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
 
 ```
 
@@ -136,7 +150,7 @@ distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes
   `prior-val`,
   color = prune_sd_mod,
   linetype = censorship_mod
-)) + facet_wrap(broadcast_freq ~ numlearners ~ run_id, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
+)) + facet_wrap(broadcast_freq ~ run_id, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
 
 
 ```
@@ -250,6 +264,6 @@ ABM_DataShort %>%
     glob_p_h,
     linetype = censorship_mod,
     color = prune_sd_mod
-  )) + facet_wrap(search_distance ~ numlearners ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
+  )) + facet_wrap(search_distance~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
 
 ```

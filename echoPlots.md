@@ -128,6 +128,21 @@ ABM_Data %>% filter(numlearners == 1000, search_distance != 10) %>%
 
 ``` r
 ABM_Data %>%
+  filter(numlearners == 1000) %>% 
+  ggplot(aes(
+    step_id,
+    glob_p_h,
+    linetype = censorship_mod,
+    color = prune_sd_mod
+  )) + facet_wrap(search_distance  ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
+```
+
+    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
+
+![](echoPlots_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+``` r
+ABM_Data %>%
   ggplot(aes(
     step_id,
     glob_p_h,
@@ -138,7 +153,7 @@ ABM_Data %>%
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 ABM_Data %>%
@@ -155,7 +170,7 @@ ABM_Data %>%
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
 ?facet_wrap
@@ -172,17 +187,17 @@ distributionData %>% filter(step_id == 50, numlearners == 1000, censorship_mod =
                                                                                broadcast_freq, labeller = label_both) + ggtitle("Distribution of beliefs")
 ```
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 distributionData %>% filter(step_id == "1", numlearners == 1000) %>%  ggplot(aes(
   `prior-val`,
   color = prune_sd_mod,
   linetype = censorship_mod
-)) + facet_wrap(broadcast_freq ~ numlearners ~ run_id, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
+)) + facet_wrap(broadcast_freq ~ run_id, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
 ```
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id == 50) %>%  ggplot(aes(
@@ -192,7 +207,7 @@ distributionData %>% filter(numlearners == 1000, search_distance == 10, step_id 
 )) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
 ```
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
 ABM_Data %>% filter(numlearners == 1000, search_distance == 10) %>%  ggplot(aes(
@@ -205,7 +220,7 @@ ABM_Data %>% filter(numlearners == 1000, search_distance == 10) %>%  ggplot(aes(
 
     ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
 ABM_DataShort <- read_csv("D:\\Users\\thram_000\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\ABM_DataShort5.csv")
@@ -302,7 +317,7 @@ distributionDataShort %>% filter(search_distance == 10, step_id == 50) %>%  ggpl
 )) + facet_wrap(broadcast_freq ~ prune_sd_mod, labeller = label_both) + geom_density() + ggtitle("Distribution of beliefs")
 ```
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
 ABM_DataShort %>%
@@ -318,7 +333,7 @@ ABM_DataShort %>%
 
     ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 ABM_DataShort %>% filter(numlearners == 1000, search_distance != 10) %>%
@@ -329,7 +344,7 @@ ABM_DataShort %>% filter(numlearners == 1000, search_distance != 10) %>%
 
     ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
 ABM_DataShort %>%
@@ -338,9 +353,9 @@ ABM_DataShort %>%
     glob_p_h,
     linetype = censorship_mod,
     color = prune_sd_mod
-  )) + facet_wrap(search_distance ~ numlearners ~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
+  )) + facet_wrap(search_distance~ broadcast_freq, labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) + ggtitle("Growth of confidence over time")
 ```
 
     ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
 
-![](echoPlots_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](echoPlots_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
