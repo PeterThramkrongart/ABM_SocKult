@@ -221,9 +221,8 @@ distributionData %>%
 distributionData %>%
   filter(Number_of_agents == 1000, Search_distance == 10, step_id == 50) %>%
   ggplot(aes(`prior-val`,
-             color = Censorship_sd_mod,
-             linetype = Censorship_sd_mod)) +
-  facet_wrap(Broadcast_frequency ~ prune_sd_mod, labeller = label_both) +
+             color = prune_sd_mod)) +
+  facet_wrap(Broadcast_frequency~Censorship_sd_mod, labeller = label_both) +
   geom_density() +
   ggtitle("Distribution of beliefs") +
   labs(x = "Belief state")
@@ -346,12 +345,12 @@ distributionDataShort <- distributionDataShort %>%
 distributionDataShort %>%
   filter(Search_distance == 10, step_id == 50) %>%
   ggplot(aes(`prior-val`,
-             color = Censorship_sd_mod,
-             linetype = Censorship_sd_mod)) +
+             color = Censorship_sd_mod)) +
   facet_wrap(Broadcast_frequency ~ prune_sd_mod, labeller = label_both) +
   geom_density() +
   ggtitle("Distribution of beliefs") +
-  labs(x = "Belief state")
+  labs(x = "Belief state") +
+  scale_color_manual(values = wes_palette("FantasticFox1"))
 ```
 
 ![](echoPlots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
@@ -360,12 +359,13 @@ distributionDataShort %>%
 ABM_DataShort %>%
   ggplot(aes(step_id,
              glob_purity,
-             linetype = Censorship_sd_mod,
-             color = prune_sd_mod,)) +
-  facet_wrap(Search_distance  ~ Broadcast_frequency, labeller = label_both) +
+             color = prune_sd_mod,
+             linetype = Search_distance)) +
+  facet_wrap( .~ Broadcast_frequency, labeller = label_both) +
   geom_smooth(size = 0.1, alpha = 0.1) +
   ggtitle("Growth of belief purity over time") +
-  labs(y = "Belief Purity")
+  labs(y = "Belief Purity") +
+  scale_color_manual(values = wes_palette("FantasticFox1"))
 ```
 
     ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
@@ -374,31 +374,18 @@ ABM_DataShort %>%
 
 ``` r
 ABM_DataShort %>%
-  filter(Number_of_agents == 1000, Search_distance != 10) %>%
+  filter(Number_of_agents == 1000) %>%
   ggplot(aes(step_id,
              glob_p_h,
-             color = prune_sd_mod)) +
-  facet_wrap(Search_distance ~ Censorship_sd_mod ~ Broadcast_frequency,
+             color = Censorship_sd_mod,
+             linetype = Search_distance)) +
+  facet_wrap(~Broadcast_frequency,
              labeller = label_both) + geom_smooth(size = 0.1, alpha = 0.1) +
   ggtitle("Growth of confidence over time") +
-  labs(y = "Confidence, P(H|E)")
+  labs(y = "Confidence, P(H|E)") +
+  scale_color_manual(values = wes_palette("FantasticFox1"))
 ```
 
     ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
 
 ![](echoPlots_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
-
-``` r
-ABM_DataShort %>%
-  ggplot(aes(step_id,
-             glob_p_h,
-             linetype = Censorship_sd_mod,
-             color = prune_sd_mod)) +
-  facet_wrap(Search_distance ~ Broadcast_frequency, labeller = label_both) +
-  geom_smooth(size = 0.1, alpha = 0.1) +
-  ggtitle("Growth of confidence over time")
-```
-
-    ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
-
-![](echoPlots_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
