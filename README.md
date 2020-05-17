@@ -16,6 +16,8 @@ job.r is the script that runs the modes with the normal parameter settings.
 
 jobShort.r is the same script as job.r, but it runs a shorter paremeter list, to to focus on the instances with harsh censorship and narrowminded agents.
 
+echoPlots.md contains the scripts for the plots used in the written report.
+
 We have also included the code from a programming assignment on building an ABM that investigates social learning strategies. 
 
 
