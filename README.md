@@ -9,6 +9,7 @@ too much sense in simualtion.
 
 The ABM itself is written in a Java based program called "Netlogo" meant for running ABMs. We have modified the code to
 include an adittional censorship intervention, and we have removed the code for an intervention using "Socratic Agents".
+the model itself is called "MadsenMod - Cleaned, Netlogo 6.0.4.nlogo"
 
 The ABM is controlled using R in the scrips called "job.r" and "jobShort.r"
 
