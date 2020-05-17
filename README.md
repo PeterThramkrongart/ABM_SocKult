@@ -10,7 +10,7 @@ too much sense in simualtion.
 The ABM itself is written in a Java based program called "Netlogo" meant for running ABMs. We have modified the code to
 include an adittional censorship intervention, and we have removed the code for an intervention using "Socratic Agents".
 
-The ABM controlled using R in the scrips called "job.r" and "jobShort.r"
+The ABM is controlled using R in the scrips called "job.r" and "jobShort.r"
 
 job.r is the script that runs the modes with the normal parameter settings. 
 
