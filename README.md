@@ -12,6 +12,9 @@ include an adittional censorship intervention, and we have removed the code for 
 
 The ABM controlled using R in the scrips called "job.r" and "jobShort.r"
 
+job.r is the script that runs the modes with the normal parameter settings. 
+
+jobShort.r is the same script as job.r, but it runs a shorter paremeter list, to to focus on the instances with harsh censorship and narrowminded agents.
 
 We have also included the code from a programming assignment on building an ABM that investigates social learning strategies. 
 
