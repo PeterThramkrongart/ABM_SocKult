@@ -115,37 +115,39 @@ distributionData %>% filter(Number_of_agents == 1000) %>%
   ggplot(aes(`prior-val`,
              Search_distance,
              fill = prune_sd_mod))  +
-  facet_wrap(Censorship_sd_mod ~ Broadcast_frequency, labeller = label_both) + geom_boxplot(outlier.size = 0.1) +
+  facet_wrap(Broadcast_frequency ~ Censorship_sd_mod ,
+             labeller = label_both,
+             nrow = 2) + 
+  geom_boxplot(outlier.size = 0.1) +
   ggtitle("Distribution of beliefs") +
-  labs(x = "Belief state")
+  labs(x = "Belief state") 
 ```
 
 ![](echoPlots_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ``` r
-ABM_Data %>% filter(Number_of_agents == 1000, Search_distance != 10) %>%
-  ggplot(aes(step_id,
-             glob_p_h,
-             color = prune_sd_mod)) +
-  facet_wrap(Search_distance ~ Censorship_sd_mod ~ Broadcast_frequency,
-             labeller = label_both) +
-  geom_smooth(size = 0.1, alpha = 0.1) +
-  ggtitle("Growth of confidence over time") +
-  labs(y = "Confidence, P(H|E)")
+distributionData %>% filter(Number_of_agents == 1000) %>%
+  ggplot(aes(`prior-val`,
+             Search_distance,
+             fill = prune_sd_mod))  +
+  facet_wrap(Broadcast_frequency ~ Censorship_sd_mod ,
+             labeller = label_both,
+             nrow = 2) + 
+  ggtitle("Distribution of beliefs") +
+  labs(x = "Belief state") +
+  geom_violin(trim = FALSE)
 ```
-
-    ## `geom_smooth()` using method = 'loess' and formula 'y ~ x'
 
 ![](echoPlots_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 ABM_Data %>%
-  filter(Number_of_agents == 1000) %>%
+  filter(Number_of_agents == 1000, Search_distance == 10) %>%
   ggplot(aes(step_id,
              glob_p_h,
              linetype = Censorship_sd_mod,
              color = prune_sd_mod)) +
-  facet_wrap(Search_distance  ~ Broadcast_frequency, labeller = label_both) +
+  facet_wrap(. ~ Broadcast_frequency, labeller = label_both) +
   geom_smooth(size = 0.1, alpha = 0.1) +
   ggtitle("Growth of confidence over time") +
   labs(y = "Confidence, P(H|E)")
@@ -157,11 +159,12 @@ ABM_Data %>%
 
 ``` r
 ABM_Data %>%
+  filter(Search_distance == 10) %>%
   ggplot(aes(step_id,
              glob_p_h,
              linetype = Censorship_sd_mod,
              color = prune_sd_mod)) +
-  facet_wrap(Search_distance ~ Number_of_agents ~ Broadcast_frequency,
+  facet_wrap(Number_of_agents ~ Broadcast_frequency,
              labeller = label_both) +
   geom_smooth(size = 0.1, alpha = 0.1) +
   ggtitle("Growth of confidence over time") +
@@ -174,12 +177,13 @@ ABM_Data %>%
 
 ``` r
 ABM_Data %>%
-  filter(Number_of_agents == 1000) %>%
+  filter(Number_of_agents == 1000,
+         Search_distance == 10) %>%
   ggplot(aes(step_id,
              glob_purity,
              linetype = Censorship_sd_mod,
-             color = prune_sd_mod,)) +
-  facet_wrap(Search_distance  ~ Broadcast_frequency, labeller = label_both) +
+             color = prune_sd_mod)) +
+  facet_wrap(.~ Broadcast_frequency, labeller = label_both) +
   geom_smooth(size = 0.1, alpha = 0.1) +
   ggtitle("Growth of belief purity over time") +
   labs(y = "Belief Purity")
@@ -190,14 +194,19 @@ ABM_Data %>%
 ![](echoPlots_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ``` r
-distributionData %>% filter(step_id == 50,
-                            Number_of_agents == 1000,
-                            Censorship_sd_mod == "None") %>%
+distributionData %>%
+  filter(
+    step_id == 50,
+    Number_of_agents == 1000,
+    Censorship_sd_mod == "None",
+    Search_distance == 10
+  ) %>%
   ggplot(aes(`prior-val`,
              color = prune_sd_mod)) +
   geom_density() +
-  facet_wrap(Search_distance ~
-               Broadcast_frequency, labeller = label_both) +
+  facet_wrap(. ~
+               Broadcast_frequency,
+             labeller = label_both) +
   ggtitle("Distribution of beliefs")  +
   labs(x = "Belief state")
 ```
@@ -219,10 +228,10 @@ distributionData %>%
 
 ``` r
 distributionData %>%
-  filter(Number_of_agents == 1000, Search_distance == 10, step_id == 50) %>%
+  filter(Number_of_agents == 1000, Search_distance == 10, step_id == 50,Censorship_sd_mod == 1| Censorship_sd_mod == 0.5) %>%
   ggplot(aes(`prior-val`,
              color = prune_sd_mod)) +
-  facet_wrap(Broadcast_frequency~Censorship_sd_mod, labeller = label_both) +
+  facet_wrap(Broadcast_frequency~Censorship_sd_mod, labeller = label_both, nrow =2) +
   geom_density() +
   ggtitle("Distribution of beliefs") +
   labs(x = "Belief state")
@@ -235,9 +244,8 @@ ABM_Data %>%
   filter(Number_of_agents == 1000, Search_distance == 10) %>%
   ggplot(aes(step_id,
              glob_sd,
-             color = Censorship_sd_mod,
-             linetype = Censorship_sd_mod)) +
-  facet_wrap(Broadcast_frequency ~ prune_sd_mod, labeller = label_both) +
+             color = prune_sd_mod)) +
+  facet_wrap(Broadcast_frequency ~Censorship_sd_mod, labeller = label_both, nrow = 2) +
   geom_smooth(alpha = 0.1) +
   ggtitle("Decrease in SD of belief over time") +
   labs(y = "SD of Beliefs")
@@ -359,7 +367,7 @@ distributionDataShort %>%
 ABM_DataShort %>%
   ggplot(aes(step_id,
              glob_purity,
-             color = prune_sd_mod,
+             color = Censorship_sd_mod,
              linetype = Search_distance)) +
   facet_wrap( .~ Broadcast_frequency, labeller = label_both) +
   geom_smooth(size = 0.1, alpha = 0.1) +

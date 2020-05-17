@@ -8,8 +8,15 @@ setwd("C:/Program Files/NetLogo 6.0.4/app") #path where netlogo.jar file is stor
 
 path_out = "C:\\Users\\thram\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\"
 
-memory.limit(size = 65000)
-gc()
+
+
+### This script is used for running multiple combinations of simulations through netlogo
+
+#setting limit for the amount of ram allowed to be used 
+memory.limit(size = 65000)#65000 mb... that is quite a lot, may be lowered
+gc()#clearing space...
+
+#list of all parameters to be run
 param_values <-  list(
   SF_setup_YN = TRUE,
   numlearners = c(100,1000),
@@ -30,12 +37,14 @@ nl_default_mapping(param_values)
 ## Not run:
 # Set the path to your NetLogo installation
 nl_netlogo_path("c:/Program Files/NetLogo 6.0.4/app")
+
+#here we define the nl_experiment to be run.
 experiment1 <- nl_experiment(
   model_file = "models/SocKult/MadsenModCleaned.nlogo",
-  iterations = 50,
+  iterations = 50,#n ticks
   param_values = param_values,
   mapping = nl_default_mapping,
-  step_measures = measures(
+  step_measures = measures(# here we specify the measures to be taken from netlogo
     glob_p_h = "glob-p-h",
     glob_purity = "glob-purity",
     glob_prior = "glob-prior",
@@ -52,7 +61,7 @@ experiment1 <- nl_experiment(
 )
 
 
-
+#adding reports from each agent from the first and last tick
 experiment1 <-
   nl_set_agent_reports(
     experiment1,
@@ -65,26 +74,28 @@ experiment1 <-
       agents = "turtles"
     ))
   )
-
+#clean again...
 gc()
-
+#running the experiment.... This took 8 or some hours I think on 15 cores, and used around 30gb of ram...
 resultCleaned <-
   nl_run(experiment1, parallel = TRUE, max_cores = 15)
 
-gc()
+gc()#cleaning again...
 
+#grapping thge results from tick 50
 ABM_DataAfter <-
   nl_get_result(resultCleaned, type = "agents_after", sub_type = "turtles")
 
 ABM_DataAfter$step_id <- 50
+#results from tick 1
 ABM_DataBefore <-
   nl_get_result(resultCleaned, type = "agents_before", sub_type = "turtles")
 ABM_DataBefore$step_id <- 1
 
 
 
-distributionData <- rbind(ABM_DataBefore, ABM_DataAfter)
-ABM_Data <- nl_get_result(resultCleaned, type = "step")
+distributionData <- rbind(ABM_DataBefore, ABM_DataAfter) #putting the data together to look at the distributions later)
+ABM_Data <- nl_get_result(resultCleaned, type = "step")#grapping general results from each_tick
 
 ABM_Data <- as_tibble(ABM_Data)
 

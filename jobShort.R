@@ -8,7 +8,7 @@ setwd("C:/Program Files/NetLogo 6.0.4/app") #path where netlogo.jar file is stor
 
 path_out = "C:\\Users\\thram\\OneDrive\\cog data\\SocKult\\ABM_SocKult\\"
 
-memory.limit(size = 65000)
+memory.limit(size = 65000) 
 gc()
 param_values <-  list(
   SF_setup_YN = TRUE,
@@ -27,7 +27,6 @@ param_values <-  list(
 
 nl_default_mapping(param_values)
 
-## Not run:
 # Set the path to your NetLogo installation
 nl_netlogo_path("c:/Program Files/NetLogo 6.0.4/app")
 experiment1 <- nl_experiment(
